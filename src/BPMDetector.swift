@@ -11,28 +11,21 @@ import Accelerate
 
 class BPMDetector {
     static func detectBPM(for url: URL, completion: @escaping (Double?) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard FileManager.default.fileExists(atPath: url.path) else {
-                DispatchQueue.main.async {
-                    print("File does not exist: \(url.path)")
-                    completion(nil)
-                }
-                return
+    DispatchQueue.global(qos: .userInitiated).async {
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            DispatchQueue.main.async {
+                print("File does not exist: \(url.path)")
+                completion(nil)
             }
-            
-            do {
-                let bpm = try EssentiaWrapper.analyzeBPM(forFile: url.path)
-                DispatchQueue.main.async {
-                    completion(bpm)
-                }
-            } catch {
-                print("Error detecting BPM for file \(url.path): \(error)")
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-            }
+            return
+        }
+        
+        let bpm = EssentiaWrapper.analyzeBPM(forFile: url.path)
+        DispatchQueue.main.async {
+            completion(bpm)
         }
     }
+}
     
     static func detectBPMForMultipleFiles(urls: [URL], progress: @escaping (Int, Int) -> Void, completion: @escaping ([URL: Double]) -> Void) {
         let group = DispatchGroup()

@@ -91,7 +91,7 @@ struct ContentView: View {
     }
     
     private func isAudioFile(_ url: URL) -> Bool {
-        let supportedAudioExtensions = ["mp3", "wav", "m4a", "flac"] // 添加其他支持的音频格式
+        let supportedAudioExtensions = ["wav", "aiff", "flac", "ogg", "mp3"] // 添加其他支持的音频格式
         return supportedAudioExtensions.contains(url.pathExtension.lowercased())
     }
     
