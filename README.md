@@ -1,6 +1,6 @@
 # ikaBeat
 
-![ikaBeat Logo](path/to/ikaBeat_logo.png)
+<img src="Resource/icon.jpg" alt="ikaBeat Logo" width="200"/>
 
 ikaBeat is a song tempo analysis software designed for Mac computers running on Apple Silicon chips.
 
