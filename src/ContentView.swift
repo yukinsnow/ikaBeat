@@ -66,6 +66,7 @@ struct ContentView: View {
         .frame(minWidth: 400, minHeight: 500)
     }
     
+    // Handle the drop of files
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
         print("Handling drop of \(providers.count) items")
         
@@ -90,11 +91,13 @@ struct ContentView: View {
         return true
     }
     
+    // Check if the file is a supported audio file
     private func isAudioFile(_ url: URL) -> Bool {
-        let supportedAudioExtensions = ["wav", "aiff", "flac", "ogg", "mp3"] // 添加其他支持的音频格式
+        let supportedAudioExtensions = ["wav", "aiff", "flac", "ogg", "mp3"] // Add other supported audio formats
         return supportedAudioExtensions.contains(url.pathExtension.lowercased())
     }
     
+    // Add a new song item to the list
     private func addSongItem(url: URL) {
         print("Adding song item: \(url.lastPathComponent)")
         let newItem = SongItem(fileName: url.lastPathComponent, isAnalyzing: true)
@@ -104,6 +107,7 @@ struct ContentView: View {
         }
     }
     
+    // Analyze the BPM of the song
     private func analyzeSong(url: URL, for index: Int) {
         print("Analyzing song: \(url.lastPathComponent)")
         
@@ -125,6 +129,7 @@ struct ContentView: View {
         }
     }
     
+    // Open file selection dialog
     private func selectFile() {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true

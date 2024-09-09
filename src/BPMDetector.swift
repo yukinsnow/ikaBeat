@@ -1,32 +1,37 @@
-//
-//  BPMDetector.swift
-//  FindBPM
-//
-//  Created by Yuki on 2024/9/3.
-//
-
 import Foundation
 import AVFoundation
 import Accelerate
 
+/// A class responsible for detecting the Beats Per Minute (BPM) of audio files
 class BPMDetector {
+    /// Detects the BPM for a single audio file
+    /// - Parameters:
+    ///   - url: The URL of the audio file
+    ///   - completion: A closure called with the detected BPM or nil if detection fails
     static func detectBPM(for url: URL, completion: @escaping (Double?) -> Void) {
-    DispatchQueue.global(qos: .userInitiated).async {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            DispatchQueue.main.async {
-                print("File does not exist: \(url.path)")
-                completion(nil)
+        DispatchQueue.global(qos: .userInitiated).async {
+            // Check if the file exists
+            guard FileManager.default.fileExists(atPath: url.path) else {
+                DispatchQueue.main.async {
+                    print("File does not exist: \(url.path)")
+                    completion(nil)
+                }
+                return
             }
-            return
-        }
-        
-        let bpm = EssentiaWrapper.analyzeBPM(forFile: url.path)
-        DispatchQueue.main.async {
-            completion(bpm)
+            
+            // Use EssentiaWrapper to analyze the BPM
+            let bpm = EssentiaWrapper.analyzeBPM(forFile: url.path)
+            DispatchQueue.main.async {
+                completion(bpm)
+            }
         }
     }
-}
     
+    /// Detects BPM for multiple audio files concurrently
+    /// - Parameters:
+    ///   - urls: An array of URLs for the audio files
+    ///   - progress: A closure called with the current progress (files processed and total files)
+    ///   - completion: A closure called with a dictionary of URLs and their corresponding BPM values
     static func detectBPMForMultipleFiles(urls: [URL], progress: @escaping (Int, Int) -> Void, completion: @escaping ([URL: Double]) -> Void) {
         let group = DispatchGroup()
         let queue = DispatchQueue(label: "com.yourdomain.bpmdetection", attributes: .concurrent)
@@ -51,6 +56,7 @@ class BPMDetector {
             }
         }
         
+        // Notify when all BPM detections are complete
         group.notify(queue: .main) {
             completion(results)
         }
