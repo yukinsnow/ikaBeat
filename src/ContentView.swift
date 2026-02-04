@@ -43,7 +43,7 @@ struct ContentView: View {
                         Spacer()
                         if item.isAnalyzing {
                             ProgressView()
-                                .scaleEffect(0.7)
+                                .controlSize(.small)
                                 .frame(width: 20, height: 20)
                         } else if let bpm = item.bpm {
                             Text("BPM: \(String(format: "%.2f", bpm))")
