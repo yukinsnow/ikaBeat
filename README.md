@@ -4,6 +4,10 @@
 
 ikaBeat is a song tempo analysis software designed for Mac computers running on Apple Silicon chips.
 
+## Update
+
+Fixes crashes on macOS 26
+
 ## Introduction
 
 ikaBeat utilizes native Swift code and Essentia's rhythm calculation algorithms to provide users with accurate BPM (Beats Per Minute) analysis of songs. The software's icon and interface design are inspired by the Japanese anime "Squid Girl" (Shinryaku! Ika Musume).
