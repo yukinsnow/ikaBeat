@@ -1,0 +1,55 @@
+name: Verify Windows icon scaling and package
+on:
+  push:
+    branches: [codex/windows-icon-scale]
+  pull_request:
+    branches: [main]
+    paths:
+      - modern/src-tauri/icons/windows/**
+      - modern/src-tauri/tauri.windows.conf.json
+      - modern/scripts/windows-icons.mjs
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: modern
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: modern
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: modern/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: modern/src-tauri -> target
+      - run: npm ci
+      - run: npm run icons:windows:check
+      - run: npm test
+      - run: npm run tauri -- build --bundles nsis --ci
+      - name: Assemble portable Windows package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force portable-out/ikaBeat | Out-Null
+          Copy-Item src-tauri/target/release/ikabeat.exe portable-out/ikaBeat/ikaBeat.exe
+          New-Item -ItemType File portable-out/ikaBeat/portable.flag | Out-Null
+          Copy-Item portable/Windows-README.txt portable-out/ikaBeat/README.txt
+          Copy-Item LICENSE,THIRD_PARTY.md,public/vendor/ESSENTIA-LICENSE.txt portable-out/ikaBeat/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-Windows-x64-icon-fix-portable
+          path: modern/portable-out/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-Windows-x64-icon-fix-installer
+          path: modern/src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error
