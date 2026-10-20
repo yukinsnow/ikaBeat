@@ -1,0 +1,183 @@
+name: Build ikaBeat for Windows, macOS, Android and iOS
+
+on:
+  push:
+    branches: ["codex/ikabeat-multiplatform-v2"]
+    paths: ["modern/**", ".github/workflows/build-multiplatform.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: modern
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modern
+            .github
+            src
+            src-tauri
+            public
+            scripts
+            tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-web
+          path: ${{ env.APP_DIR }}/dist
+          if-no-files-found: error
+
+  desktop:
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows-x64
+            args: --bundles nsis --ci
+          - os: macos-latest
+            name: macOS-universal
+            args: --target universal-apple-darwin --bundles dmg --ci
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modern
+            .github
+            src
+            src-tauri
+            public
+            scripts
+            tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ env.APP_DIR }}/src-tauri -> target
+      - run: npm ci
+      - run: npm run tauri -- build ${{ matrix.args }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-${{ matrix.name }}-unsigned
+          path: |
+            ${{ env.APP_DIR }}/src-tauri/target/**/bundle/nsis/*.exe
+            ${{ env.APP_DIR }}/src-tauri/target/**/bundle/dmg/*.dmg
+          if-no-files-found: error
+
+  android:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modern
+            .github
+            src
+            src-tauri
+            public
+            scripts
+            tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - name: Configure Android NDK
+        run: |
+          sdkmanager "ndk;27.2.12479018"
+          echo "NDK_HOME=$ANDROID_HOME/ndk/27.2.12479018" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,x86_64-linux-android,i686-linux-android
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ env.APP_DIR }}/src-tauri -> target
+      - run: npm ci
+      - run: npm run tauri -- android init --ci
+      - name: Build installable development APKs
+        run: npm run tauri -- android build --debug --apk --split-per-abi --target aarch64 armv7 x86_64 --ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-Android-debug-APKs
+          path: ${{ env.APP_DIR }}/src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
+
+  ios:
+    needs: verify
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modern
+            .github
+            src
+            src-tauri
+            public
+            scripts
+            tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ env.APP_DIR }}/src-tauri -> target
+      - run: npm ci
+      - run: npm run tauri -- ios init --ci
+      - name: Build unsigned iOS device archive
+        run: npm run tauri -- ios build --ci --target aarch64 --no-sign
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-iOS-unsigned-needs-signing
+          path: ${{ env.APP_DIR }}/src-tauri/gen/apple/build/**/*.ipa
+          if-no-files-found: error
