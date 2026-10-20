@@ -8,23 +8,23 @@
 
 ikaBeat 2.0 使用 Tauri 2、React、TypeScript 和 Essentia WebAssembly 重构，保留原来的 ika 横幅、角色图片和应用图标。音乐在设备本地分析，无需上传。
 
-> **当前跨平台版本为 v2.0.0-rc.1 预览版。** 四个平台已通过云端编译和打包；原生应用及手机真机的导入、分析、导出仍待完整验收。下载前请留意各平台的签名和运行时要求。
+> **当前正式发布版本为 v2.0.0。** 四个平台已通过云端编译和打包；原生应用及手机真机的导入、分析、导出仍待完整验收。下载前请留意各平台的签名和运行时要求。
 
 ## 下载
 
-[查看 v2.0.0-rc.1 全部下载与更新说明](https://github.com/yukinsnow/ikaBeat/releases/tag/v2.0.0-rc.1)
+[查看 v2.0.0 全部下载与更新说明](https://github.com/yukinsnow/ikaBeat/releases/tag/v2.0.0)
 
 | 平台 | 推荐下载 | 说明 |
 | --- | --- | --- |
-| Windows x64 | [绿色版 ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_Windows_x64_portable.zip) | 解压后运行 `ikaBeat.exe`；需系统已有 WebView2 |
-| Windows x64 | [安装版 EXE](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_x64-setup.exe) | NSIS 安装程序，未正式代码签名 |
-| macOS Apple Silicon / Intel | [免安装 APP ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_macOS_universal_app.zip) · [DMG](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_universal.dmg) | Universal，未正式签名或公证 |
-| Android ARM64 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_Android_arm64-debug.zip) | 常见现代 Android 真机；解压后安装 APK |
-| Android ARMv7 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_Android_arm-debug.zip) | 32 位 ARM 设备 |
-| Android x86_64 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_Android_x86_64-debug.zip) | x86_64 设备或模拟器 |
-| iOS / iPadOS ARM64 | [未签名 IPA](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_iOS_arm64_unsigned.ipa) | 必须用 Apple 开发者证书及相应 provisioning 签名后安装 |
+| Windows x64 | [绿色版 ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_Windows_x64_portable.zip) | 解压后运行 `ikaBeat.exe`；需系统已有 WebView2 |
+| Windows x64 | [安装版 EXE](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_x64-setup.exe) | NSIS 安装程序，未正式代码签名 |
+| macOS Apple Silicon / Intel | [免安装 APP ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_macOS_universal_app.zip) · [DMG](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_universal.dmg) | Universal，未正式签名或公证 |
+| Android ARM64 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_Android_arm64-debug.zip) | 常见现代 Android 真机；解压后安装 APK |
+| Android ARMv7 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_Android_arm-debug.zip) | 32 位 ARM 设备 |
+| Android x86_64 | [开发版 APK ZIP](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_Android_x86_64-debug.zip) | x86_64 设备或模拟器 |
+| iOS / iPadOS ARM64 | [未签名 IPA](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_iOS_arm64_unsigned.ipa) | 必须用 Apple 开发者证书及相应 provisioning 签名后安装 |
 
-另提供 [Web 静态资源](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_web.zip)、[独立现代版源码](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/ikaBeat_2.0.0_modern-source.zip) 和 [SHA256 校验值](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0-rc.1/SHA256SUMS.txt)。
+另提供 [Web 静态资源](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_web.zip)、[独立现代版源码](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/ikaBeat_2.0.0_modern-source.zip) 和 [SHA256 校验值](https://github.com/yukinsnow/ikaBeat/releases/download/v2.0.0/SHA256SUMS.txt)。
 
 需要旧版原生 macOS 应用时，可下载 [1.1.0](https://github.com/yukinsnow/ikaBeat/releases/tag/1.1.0)。它与跨平台重构版独立保留。
 
