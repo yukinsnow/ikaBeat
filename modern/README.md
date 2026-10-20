@@ -2,6 +2,8 @@
 
 作者：**[Github@Yukinsnow](https://github.com/Yukinsnow)**。
 
+桌面端另提供免安装包：Windows x64 绿色 ZIP，以及 macOS Universal `.app` ZIP。Windows 绿色模式将应用数据写入程序旁的 `data/`，需保留随包附带的 `portable.flag`；运行时要求与限制见 [绿色版说明](docs/绿色版.md)。
+
 保留原版 ika 图片的离线音乐 BPM 分析工具。此目录是独立、可运行的跨平台重构源码，不依赖旧项目的 macOS ARM64 动态库。
 
 **当前状态：Windows、macOS、Android、iOS 云端构建全部通过，安装包已生成；原生运行和移动端实机验收仍待完成。**
