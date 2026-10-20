@@ -50,7 +50,7 @@ npm run preview
 
 移动端 `gen/` 工程需要在具备工具链的主机首次初始化，云端工作流已成功执行 Android / iOS 初始化和编译；本机没有移动端工具链。应用标识为 `com.yukinsnow.ikabeat`，发布前按开发者账户确认。macOS Universal 构建需要添加 `aarch64-apple-darwin` 和 `x86_64-apple-darwin` targets，并使用 `npm run tauri build -- --target universal-apple-darwin`。
 
-仓库附带 `.github/workflows/build-multiplatform.yml`，用于前端测试及 Windows / macOS / Android / iOS 构建。已推送到 `codex/ikabeat-multiplatform-v2` 分支，GitHub 仓库中的应用源码位于 `modern/`；工作流的 `APP_DIR` 相应设置为 `modern`。本地独立源码包中的 `APP_DIR` 为 `.`。
+仓库附带 `.github/workflows/build-multiplatform.yml`，用于前端测试及 Windows / macOS / Android / iOS 构建。已通过 PR #5 合并到 `main`，GitHub 仓库中的应用源码位于 `modern/`；工作流的 `APP_DIR` 相应设置为 `modern`。本地独立源码包中的 `APP_DIR` 为 `.`。
 
 产物分别为 Windows NSIS EXE、macOS Universal DMG、Android 开发签名 APK、未签名 iOS IPA。iOS IPA 需要用自己的 Apple 开发者证书重新签名才能在普通真机安装；当前没有配置正式签名凭证。正式发布仍需签名、公证和实机测试。构建完成后的实际结果以 `docs/构建结果.md` 为准。
 
