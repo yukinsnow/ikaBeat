@@ -1,6 +1,9 @@
 name: Build portable desktop apps
 
 on:
+  push:
+    branches: ["codex/ikabeat-multiplatform-v2"]
+    paths: [".github/workflows/build-portable.yml"]
   workflow_dispatch:
 
 permissions:
