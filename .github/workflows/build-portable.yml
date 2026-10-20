@@ -1,0 +1,75 @@
+name: Build portable desktop apps
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: modern
+
+jobs:
+  portable:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            modern
+            src
+            src-tauri
+            public
+            scripts
+            portable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ env.APP_DIR }}/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+      - if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ env.APP_DIR }}/src-tauri -> target
+      - run: npm ci
+      - if: runner.os == 'Windows'
+        run: npm run tauri -- build --no-bundle --ci
+      - if: runner.os == 'Windows'
+        name: Assemble Windows portable folder
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force portable-out/ikaBeat | Out-Null
+          Copy-Item src-tauri/target/release/ikabeat.exe portable-out/ikaBeat/ikaBeat.exe
+          New-Item -ItemType File portable-out/ikaBeat/portable.flag | Out-Null
+          Copy-Item portable/Windows-README.txt portable-out/ikaBeat/README.txt
+          Copy-Item LICENSE,THIRD_PARTY.md portable-out/ikaBeat/
+          Copy-Item public/vendor/ESSENTIA-LICENSE.txt portable-out/ikaBeat/
+      - if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-Windows-x64-portable
+          path: ${{ env.APP_DIR }}/portable-out/
+          if-no-files-found: error
+      - if: runner.os == 'macOS'
+        run: npm run tauri -- build --target universal-apple-darwin --bundles app --ci
+      - if: runner.os == 'macOS'
+        name: Package macOS app without an installer
+        run: |
+          mkdir -p portable-out
+          ditto -c -k --sequesterRsrc --keepParent src-tauri/target/universal-apple-darwin/release/bundle/macos/ikaBeat.app portable-out/ikaBeat_2.0.0_macOS_universal_app.zip
+      - if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-macOS-universal-app
+          path: ${{ env.APP_DIR }}/portable-out/*.zip
+          if-no-files-found: error
