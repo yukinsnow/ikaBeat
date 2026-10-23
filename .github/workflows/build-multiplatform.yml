@@ -176,6 +176,8 @@ jobs:
           workspaces: ${{ env.APP_DIR }}/src-tauri -> target
       - run: npm ci
       - run: npm run tauri -- ios init --ci
+      - run: node scripts/install-ios-icons.mjs
+      - run: node scripts/install-ios-icons.mjs --check
       - name: Build unsigned iOS device archive
         run: npm run tauri -- ios build --ci --target aarch64 --no-sign
       - uses: actions/upload-artifact@v4
