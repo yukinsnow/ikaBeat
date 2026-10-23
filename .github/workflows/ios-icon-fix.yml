@@ -1,0 +1,47 @@
+name: Build iOS with verified ika AppIcon
+on:
+  push:
+    branches: [codex/ios-app-icon]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: modern
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: modern
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: modern/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: modern/src-tauri -> target
+      - run: npm ci
+      - run: npm test
+      - run: npm run tauri -- ios init --ci
+      - name: Install ika artwork into the initialized Xcode AppIcon catalog
+        run: node scripts/install-ios-icons.mjs
+      - name: Verify every catalog entry, dimensions and opaque PNG
+        run: node scripts/install-ios-icons.mjs --check
+      - name: Build unsigned iOS device IPA
+        run: npm run tauri -- ios build --ci --target aarch64 --no-sign
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ikaBeat-iOS-icon-fix-unsigned
+          path: |
+            modern/src-tauri/gen/apple/build/**/*.ipa
+            modern/src-tauri/gen/apple/ikabeat-icon-verification.json
+            modern/src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/AppIcon-60x60@2x.png
+            modern/src-tauri/gen/apple/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+          if-no-files-found: error

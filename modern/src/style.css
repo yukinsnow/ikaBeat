@@ -1,4 +1,8 @@
 :root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
   font-family: Inter, "Segoe UI", "Microsoft YaHei", sans-serif;
   color: #26364b;
   background: #f8fbff;
@@ -44,6 +48,7 @@ a {
 .shell {
   display: flex;
   min-height: 100dvh;
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
 }
 .sidebar {
   width: 228px;
@@ -54,7 +59,7 @@ a {
   display: flex;
   flex-direction: column;
   position: fixed;
-  inset: 0 auto 0 0;
+  inset: var(--safe-top) auto var(--safe-bottom) var(--safe-left);
 }
 .brand {
   display: flex;
@@ -675,12 +680,15 @@ footer {
   place-items: center;
   z-index: 10;
   padding: 20px;
+  padding: calc(20px + var(--safe-top)) calc(20px + var(--safe-right))
+    calc(20px + var(--safe-bottom)) calc(20px + var(--safe-left));
 }
 .modal {
   position: relative;
   background: white;
   max-width: 540px;
   max-height: 90dvh;
+  max-height: min(90dvh, calc(100dvh - var(--safe-top) - var(--safe-bottom) - 40px));
   overflow: auto;
   border-radius: 18px;
   padding: 32px;
