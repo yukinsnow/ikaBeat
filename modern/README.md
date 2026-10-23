@@ -58,6 +58,10 @@ npm run tauri ios build -- --ci --target aarch64 --no-sign
 
 脚本根据 `Assets.xcassets/AppIcon.appiconset/Contents.json` 逐项检查尺寸、写入原版 ika 图案，并输出不含 alpha 通道的 RGB PNG。只生成 `src-tauri/icons/ios/` 而不更新 Xcode AppIcon 目录，会导致应用继续使用 Tauri 默认图标。CI 已在 `ios init` 之后加入安装及校验步骤。
 
+iOS 图标使用原始 `public/assets/icon.jpg` 铺满方形画布，不加入桌面图标的透明留白、圆角或阴影，圆角交给系统处理。修改原图后运行 `node scripts/generate-ios-icons.mjs`，再执行上述安装步骤；生成时仅裁去原图边缘 2%，移除图片自带的白色圆角尖端。
+
+界面通过 `env(safe-area-inset-*)` 为顶部、底部和横屏两侧预留系统安全区，固定侧栏及帮助弹窗也使用相同边距；桌面安全区为零时保持原布局。
+
 移动端 `gen/` 工程需要在具备工具链的主机首次初始化，云端工作流已成功执行 Android / iOS 初始化和编译；本机没有移动端工具链。应用标识为 `com.yukinsnow.ikabeat`，发布前按开发者账户确认。macOS Universal 构建需要添加 `aarch64-apple-darwin` 和 `x86_64-apple-darwin` targets，并使用 `npm run tauri build -- --target universal-apple-darwin`。
 
 仓库附带 `.github/workflows/build-multiplatform.yml`，用于前端测试及 Windows / macOS / Android / iOS 构建。已通过 PR #5 合并到 `main`，GitHub 仓库中的应用源码位于 `modern/`；工作流的 `APP_DIR` 相应设置为 `modern`。本地独立源码包中的 `APP_DIR` 为 `.`。
